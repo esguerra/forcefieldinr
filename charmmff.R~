@@ -107,4 +107,3 @@ axis(2, cex.axis=1.0, at=seq(0, 30,5),las=1)
 box(which="plot",col="black")
 legend("topright",col=c("blue","red","gray","green"),lty=1,legend=c("n1","n2","n3","sum"), cex=0.8)
 
-#dev.off()
