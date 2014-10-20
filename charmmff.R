@@ -148,10 +148,17 @@ vdihet <- vdihe1+vdihe2+vdihe3
 ################################################################################
 # NON-BONDED (INTERMOLECULAR) INTERACTIONS
 ################################################################################
+#lennard-jones potential
+epsiloni=-0.0780 #kcal/mole * 10
+epsilonj=-0.0220 #kcal/mole * 10
+epsilonij=sqrt(epsiloni*epsilonj) #Lorentz-Berthelot
+rmini=2.040*2
+rminj=1.32*2
+rminij=((rmini+rminj)/2)
+rij=seq(0.0, 7.0, ((7.0-0.0)/100))
+lj=epsilonij*( ((rminij/rij)**12) - (2*(rminij/rij)**6) )
 
-
-
-
+#electrostatic potential
 
 
 
@@ -160,8 +167,8 @@ vdihet <- vdihe1+vdihe2+vdihe3
 ################################################################################
 # POTENTIAL PLOTS
 ################################################################################
-#pdf(file="charmm_potential.pdf",family="Helvetica", width=6,height=10)                           
-par(mfcol=c(2,1))                                                                               
+pdf(file="charmm_potential.pdf",family="Helvetica", width=6,height=10)                           
+par(mfcol=c(3,1))                                                                               
 par(cex=0.4)                                                                                    
 par(mar=c(4, 4, 0, 0), oma=c(6,6,7,2))                                                          
 par(tcl=-0.25)                                                                                  
@@ -193,4 +200,21 @@ axis(2, cex.axis=1.0, at=seq(0, 2,0.2),las=1)
 box(which="plot",col="black")
 legend("topright",col=c("blue","red","gray","green"),lty=1,legend=c("n1","n2","n3","sum"), cex=0.8)
 
-#dev.off()
+
+xlim=range(2.5, 6.0) 
+ylim=range(-0.1,0.1)
+plot(rij,lj, pch=23, type="o", col="blue", cex=0.8,
+     xlab = " ", main="", xlim = xlim, ylim = ylim, ylab= " ",
+     panel.first = grid(), axes=FALSE, xaxs="i", yaxs="i")
+#lines(b, vbond2, col="red",type="o")
+#lines(b, vbond3, col="gray",type="o")
+abline(v=rminij,col=3,lty=3)
+axis(1, cex.axis=1.0, at=seq(2.5, 6.0, 0.5))
+axis(2, cex.axis=1.0, at=seq(-0.1, 0.1, 0.05),las=1) 
+box(which="plot",col="black")
+#legend("topright",col=c("blue","red","gray"),lty=1,legend=c("single","double","triple"), cex=0.8)
+
+
+
+
+dev.off()
