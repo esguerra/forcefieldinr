@@ -178,7 +178,6 @@ phi=seq(0, 2*pi, ((2*pi)/100))
 vdihe1 <- k1*(1+(cos(n1*phi-delta)))
 vdihe2 <- k2*(1+(cos(n2*phi-delta)))
 vdihe3 <- k3*(1+(cos(n3*phi-delta)))
-
 vdihet <- vdihe1+vdihe2+vdihe3
 
 
