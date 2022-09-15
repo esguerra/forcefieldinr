@@ -1,0 +1,231 @@
+---
+title: "Functions making up a Force-Field"
+author: 
+- Mauricio Esguerra PhD ^[Department of Cell and Molecular Biology,  Uppsala University]
+#date: "March 12, 2018"
+header-includes:
+  - \usepackage[T1]{fontenc}
+  - \usepackage[scaled]{helvet}
+  - \renewcommand*\familydefault{\sfdefault}
+output:
+  pdf_document:
+    toc: true
+    number_sections: true
+  html_document:
+    df_print: paged
+  word_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Bonds as Harmonic Potential Functions
+
+```{r, echo=TRUE}
+################################################################################
+# BONDS AS HARMONIC POTENTIALS
+################################################################################
+#Force constants for carbon single, double, and triple bonds
+k1=222.50; k2=300; k3=450
+
+#Equilibrium distances for carbon single, double, and triple bonds in Ångström
+b1=1.5300; b2=1.3; b3=1.0
+
+#Sampled variable
+#b=runif(100, 0.5, 2.5)
+b=seq(0.0, 2.5, ((2.5-0.0)/50))
+
+#Harmonic Potential function
+vbond1 <- k1*(b-b1)^2
+vbond2 <- k2*(b-b2)^2
+vbond3 <- k3*(b-b3)^2
+
+xlim=range(0.0, 2.5) 
+ylim=range(0,400)
+#plot(b, vbond1, pch=23, type="o", col="blue", cex=0.8,
+#     xlab = " ", main="", xlim = xlim, ylim = ylim, ylab= " ",
+#     panel.first = grid(), axes=FALSE, xaxs="i", yaxs="i")
+plot(b, vbond1, pch=23, type="o", col="blue", cex=0.6,
+     ylab="potential (bond distance)",main="", xlim = xlim, ylim = ylim,
+     panel.first = grid(), xaxs="i", yaxs="i")
+lines(b, vbond2, col="red",type="o", cex=0.6)
+lines(b, vbond3, col="gray",type="o", cex=0.6)
+#axis(1, cex.axis=1.0, at=seq(0, 2.5,0.5))
+#axis(2, cex.axis=1.0, at=seq(0, 400,50),las=1) 
+#box(which="plot",col="black")
+legend("top",col=c("blue","red","gray"),lty=1,
+       legend=c("single C bond","double C bond","triple C bond"), cex=0.8)
+```
+
+# Bonds as Morse Potentials
+
+```{r, echo=TRUE}
+################################################################################
+# BONDS AS MORSE (ANHARMONIC) POTENTIALS
+################################################################################
+#Force constants for carbon single, double, and triple bonds
+k1=222.50; k2=300; k3=450
+
+#Equilibrium distances for carbon single, double, and triple bonds in Ångström
+b1=1.5300; b2=1.3; b3=1.0
+
+#Well depths (De) for anharmonic potential
+De1 <- 10000
+De2 <- 10000
+De3 <- 10000
+#
+alpha1 <- sqrt(k1/(2*De1))
+alpha2 <- sqrt(k2/(2*De2))
+alpha3 <- sqrt(k3/(2*De3))
+#Sampled variable
+#b=runif(100, 0.5, 2.5)
+b=seq(0.0, 2.5, ((2.5-0.0)/50))
+
+#Harmonic Potential function
+vbond1 <- De1*(1-exp(-alpha1*(b-b1)))^2
+vbond2 <- De2*(1-exp(-alpha2*(b-b2)))^2
+vbond3 <- De3*(1-exp(-alpha3*(b-b3)))^2
+
+xlim=range(0.0, 2.5) 
+ylim=range(0,400)
+#plot(b, vbond1, pch=23, type="o", col="blue", cex=0.8,
+#     xlab = " ", main="", xlim = xlim, ylim = ylim, ylab= " ",
+#     panel.first = grid(), axes=FALSE, xaxs="i", yaxs="i")
+plot(b, vbond1, pch=23, type="o", col="blue", cex=0.6,
+     ylab="potential (bond distance)",main="", xlim = xlim, ylim = ylim,
+     panel.first = grid(), xaxs="i", yaxs="i")
+lines(b, vbond2, col="red",type="o", cex=0.6)
+lines(b, vbond3, col="gray",type="o", cex=0.6)
+#axis(1, cex.axis=1.0, at=seq(0, 2.5,0.5))
+#axis(2, cex.axis=1.0, at=seq(0, 400,50),las=1) 
+#box(which="plot",col="black")
+legend("top",col=c("blue","red","gray"),lty=1,
+       legend=c("single C bond","double C bond","triple C bond"), cex=0.8)
+```
+
+
+
+# Dihedral Angle Potentials as Cosines or a Sum of Cosines
+
+```{r, echo=TRUE}
+################################################################################
+# DIHEDRAL ANGLES AS COSINES OR FOURIER SERIES
+################################################################################
+
+#k3=0.1525; k2=0.3; k1=0.6 # k=Vo/2, so the barrier for rotation is Vo.
+k3=0.1525; k2=k3; k1=k3
+n3=3; n2=2; n1=1    # number of barriers or minima.
+delta=0
+phi=seq(0, 2*pi, ((2*pi)/100))
+
+#angles are given in radians so have to convert on ploting to degrees.
+vdihe1 <- k1*(1+(cos(n1*phi-delta)))
+vdihe2 <- k2*(1+(cos(n2*phi-delta)))
+vdihe3 <- k3*(1+(cos(n3*phi-delta)))
+
+vdihet <- vdihe1+vdihe2+vdihe3
+
+xlim=range(0, 360) 
+ylim=range(0,1.0)
+plot(phi*(360/(2*pi)), vdihe1, pch=23, type="o", col="blue", cex=0.5,
+     xlab = "dihedral angle alkane", main="", xlim = xlim, 
+     ylim = ylim, ylab= "dihedral potential",
+     panel.first = grid(), axes=FALSE, xaxs="i", yaxs="i")
+lines(phi*(360/(2*pi)), vdihe2, col="red",type="o", cex=0.5)
+lines(phi*(360/(2*pi)), vdihe3, col="gray",type="o", cex=0.5)
+lines(phi*(360/(2*pi)), vdihet, col="green",type="o", cex=0.5)
+axis(1, cex.axis=1.0, at=seq(0, 360,30))
+axis(2, cex.axis=1.0, at=seq(0, 2,0.2),las=1) 
+box(which="plot",col="black")
+legend("top",col=c("blue","red","gray","green"),lty=1,
+       legend=c("nmin=1","nmin=2","nmin=3","sum"), cex=0.8)
+```
+
+
+# NON-BONDED (INTERMOLECULAR) INTERACTIONS  
+
+## Lennard-Jones potential  
+```{r, echo=TRUE}
+################################################################################
+# NON-BONDED (INTERMOLECULAR) INTERACTIONS
+################################################################################
+# Lennard-Jones potential
+epsiloni=-0.0780 #kcal/mole
+epsilonj=-0.0220 #kcal/mole
+epsilonij=sqrt(epsiloni*epsilonj) #Lorentz-Berthelot Lorentz=geometric
+rmini=2.040*2   #Ångström
+rminj=1.32*2    #Ångström
+rminij=((rmini+rminj)/2)          #Lorentz-Berthelot Berthelot=aritmetic
+rij=seq(0.0, 7.0, ((7.0-0.0)/100))
+Aij= ((rminij/rij)**12)
+Bij= (2*(rminij/rij)**6)
+lj=epsilonij*( Aij - Bij)
+
+xlim=range(2.5, 6.0) 
+ylim=range(-0.05,0.05)
+plot(rij,epsilonij*Aij, pch=23, type="o", col="blue", cex=0.5,
+     xlab = expression("r"~(ring(A))), main="", xlim = xlim, ylim = ylim, ylab= "U(r)",
+     panel.first = grid(), axes=FALSE, xaxs="i", yaxs="i")
+lines(rij,-epsilonij*Bij, pch=23, type="o", col="red", cex=0.5,
+      xlab = " ", main="", xlim = xlim, ylim = ylim, ylab= " ",
+      panel.first = grid(),  xaxs="i", yaxs="i")
+lines(rij,lj, pch=23, type="o", col="gray", cex=0.5,
+      xlab = " ", main="", xlim = xlim, ylim = ylim, ylab= " ",
+      panel.first = grid(), xaxs="i", yaxs="i")
+abline(v=rminij,col="black",lty=2, lwd=2)
+axis(1, cex.axis=1.0, at=seq(2.5, 6.0, 0.5))
+axis(2, cex.axis=1.0, at=seq(-0.05, 0.05, 0.01),las=1) 
+legend("topright",col=c("blue","red","gray"),lty=1,
+       legend=c(expression("repulsive"~(r[0]/r)^12),
+                expression("attractive"~-(r[0]/r)^6),"L-J"), cex=0.8)
+text(c(3.1), c(-0.045), labels=c("-0.0412"), cex= 0.8)
+box(which="plot",col="black")
+```
+
+## Electrostatic (Coulomb) potential
+It is Coulomb's law in AKMA units, ie length in Å, energy in kcal/mol and 
+charge in |e|.
+A relative dielectric permittivity (dimensionless) is allowed for in the 
+denominator.
+```{r, echo=TRUE}
+# electrostatic potential
+# It is Coulomb's law in AKMA units, ie length in Å, energy in kcal/mol and charge in |e|.
+# A relative dielectric permittivity (dimensionless) is allowed for in the denominator 
+# (keyword EPS, default value 1.0). Numerically this boils down to:
+# E= 332*(qi*qj)/(rij*eps)
+# Kcoul = 1/(4*pi*epsilon-zero)
+# epsilon-zero = 8.8542 x 10^-12 C^2 m^-1 J^-1
+# 1 m = 10^10 A
+# 1 C = 1.6022 x 10 ^19 esu
+# 1 J = 6.0221 x 10 23 / 4184 kcal mol^-1
+# Kcoul = 1 J m / 4*pi*(8.8542 x 1o ^-12)C^2 == 332 kcal * mol^-1 * esu^-2
+qi=-0.27  # carbon charge
+qj=0.09   # hydrogen charge
+e=1 # dielectric constant 1 for vacuum, 80 for water, 4 for protein interior 
+rij=seq(0.0, 7.0, ((7.0-0.0)/100))
+Kcoul=332
+velecc= Kcoul*(qi*qi)/(e*rij)
+velech= Kcoul*(qi*qj)/(e*rij)
+
+
+xlim=range(0, 6.0) 
+ylim=range(-50,50)
+plot(rij,velecc, pch=23, type="o", col="blue", cex=0.5,
+     xlab = expression("r"~(ring(A))), main="", xlim = xlim, ylim = ylim, 
+     ylab= "U(r)",
+     panel.first = grid(), axes=FALSE, xaxs="i", yaxs="i")
+lines(rij,velech, pch=23, type="o", col="red", cex=0.5,
+      xlab = " ", main="", xlim = xlim, ylim = ylim, ylab= " ",
+      panel.first = grid(),  xaxs="i", yaxs="i")
+#abline(v=rminij,col="gray",lty=2, lwd=2)
+axis(1, cex.axis=1.0, at=seq(0.0, 6.0, 0.5))
+axis(2, cex.axis=1.0, at=seq(-50, 50, 10),las=1) 
+legend("topright",col=c("blue","red"),lty=1,legend=c("C(-0.27) .. C(-0.27)",
+      "C(-0.27) .. H(+0.09)"), cex=0.8)
+box(which="plot",col="black")
+```
+
+
